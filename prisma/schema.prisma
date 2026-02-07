@@ -1,0 +1,157 @@
+// File: prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // <-- GANTI DARI "sqlite" KE "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// --- MODEL USER ---
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  name      String
+  password  String   // <--- TAMBAHAN BARU (Wajib)
+  
+  totalXp   Int      @default(0)
+  level     Int      @default(1)
+  
+  nodes       Node[]
+  enrollments Enrollment[]
+  progress    UserProgress[]
+  badges      UserBadge[]
+  posts     Post[]   // <--- Tambahkan ini
+  
+  createdAt DateTime @default(now())
+}
+
+// --- MODEL GRAPH (NODE & EDGE) ---
+model Node {
+  id          String   @id @default(uuid())
+  label       String
+  type        String   
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  
+  outgoingEdges Edge[] @relation("SourceNode")
+  incomingEdges Edge[] @relation("TargetNode")
+
+  createdAt   DateTime @default(now())
+}
+
+model Edge {
+  id           String @id @default(uuid())
+  sourceNodeId String
+  sourceNode   Node   @relation("SourceNode", fields: [sourceNodeId], references: [id])
+  targetNodeId String
+  targetNode   Node   @relation("TargetNode", fields: [targetNodeId], references: [id])
+  createdAt    DateTime @default(now())
+}
+
+model AiInsight {
+  id        String   @id @default(uuid())
+  prompt    String
+  response  String
+  createdAt DateTime @default(now())
+}
+
+// --- MODEL LMS (COURSE & LESSON) ---
+
+model Course {
+  id          String   @id @default(uuid())
+  title       String
+  description String
+  thumbnail   String?
+  level       String
+  duration    String
+  
+  lessons     Lesson[]
+  
+  // <--- TAMBAHAN RELASI ---
+  enrollments Enrollment[] // Satu kelas bisa diambil banyak user
+  
+  createdAt   DateTime @default(now())
+}
+
+model Lesson {
+  id        String   @id @default(uuid())
+  title     String
+  content   String
+  type      String
+  
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  
+  // <--- TAMBAHAN RELASI ---
+  userProgress UserProgress[] // Satu materi bisa dikerjakan banyak user
+  
+  createdAt DateTime @default(now())
+}
+
+// --- MODEL TRACKING (ENROLLMENT & PROGRESS) ---
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  userId    String
+  courseId  String
+  
+  user      User     @relation(fields: [userId], references: [id])
+  course    Course   @relation(fields: [courseId], references: [id])
+  
+  enrolledAt DateTime @default(now())
+
+  @@unique([userId, courseId])
+}
+
+model UserProgress {
+  id        String   @id @default(uuid())
+  userId    String
+  lessonId  String
+  
+  isCompleted Boolean @default(false)
+  
+  user      User     @relation(fields: [userId], references: [id])
+  lesson    Lesson   @relation(fields: [lessonId], references: [id])
+  
+  updatedAt DateTime @updatedAt
+
+  @@unique([userId, lessonId])
+}
+
+model Badge {
+  id          String   @id @default(uuid())
+  slug        String   @unique // Contoh: "fast-learner"
+  name        String
+  description String
+  icon        String   // Nama icon lucide (misal: "Zap")
+  
+  users       UserBadge[]
+}
+
+model UserBadge {
+  id        String   @id @default(uuid())
+  userId    String
+  badgeId   String
+  
+  earnedAt  DateTime @default(now())
+  
+  user      User     @relation(fields: [userId], references: [id])
+  badge     Badge    @relation(fields: [badgeId], references: [id])
+  
+  @@unique([userId, badgeId])
+}
+
+// --- TAMBAHAN: COMMUNITY ---
+
+model Post {
+  id        String   @id @default(uuid())
+  content   String
+  
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+  
+  createdAt DateTime @default(now())
+}

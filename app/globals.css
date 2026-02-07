@@ -1,26 +1,70 @@
+/* File: app/globals.css */
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --color-background: #222222;
+  --color-foreground: #fefefe;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer utilities {
+  /* Glassmorphism Premium (Monokrom) */
+  .glass-panel {
+    @apply bg-[#222222]/80 backdrop-blur-xl border border-[#fefefe]/10 shadow-2xl;
+  }
+  
+  .glass-input {
+    @apply bg-[#fefefe]/5 border border-[#fefefe]/20 text-[#fefefe] placeholder-[#fefefe]/30 focus:border-[#fefefe]/50 focus:ring-0 transition-all;
+  }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  .glass-button {
+    @apply bg-[#fefefe] text-[#222222] font-semibold hover:bg-[#cccccc] transition-colors shadow-lg;
+  }
+
+  /* REVISI AMBIENT: Putih Pudar (Monokrom) */
+  .ambient-glow {
+    @apply absolute blur-[120px] opacity-20 rounded-full pointer-events-none;
+    background: radial-gradient(circle, rgba(254,254,254,0.15) 0%, rgba(34,34,34,0) 70%);
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #222222;
+  color: #fefefe;
+  overflow-x: hidden;
+}
+
+/* File: app/globals.css - Tambahkan di paling bawah */
+
+@layer utilities {
+  .animation-delay-2000 {
+    animation-delay: 2s;
+  }
+  .animation-delay-4000 {
+    animation-delay: 4s;
+  }
+}
+
+/* Animasi Logo Berjalan (Marquee) */
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-scroll {
+  animation: scroll 30s linear infinite;
+}
+
+/* Animasi Floating (Pil Melayang) */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+.animate-float-slow {
+  animation: float 8s ease-in-out infinite;
+}
+.animate-float-fast {
+  animation: float 4s ease-in-out infinite;
 }
