@@ -9,7 +9,7 @@ import { Sparkles, ArrowRight, Info } from "lucide-react";
 const ForceGraph2D = dynamic(() => import("react-force-graph-2d"), { ssr: false });
 
 export default function PotentialGraph() {
-  const fgRef = useRef<any>();
+  const fgRef = useRef<any>(null);
   
   // -- STATE 1: WORKSHOP (INPUT) --
   const [knowledgeList, setKnowledgeList] = useState<string[]>(["", "", "", "", ""]);
