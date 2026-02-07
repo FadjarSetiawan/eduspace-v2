@@ -6,6 +6,7 @@ import { BookOpen, Trophy, Target, PlayCircle, BarChart } from "lucide-react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
+export const dynamic = "force-dynamic";
 
 const prisma = new PrismaClient();
 
