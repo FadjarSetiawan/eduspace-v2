@@ -5,7 +5,7 @@ import { hash } from "bcryptjs";
 const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
-  try {
+    try {
     const { name, email, password } = await req.json();
 
     if (!name || !email || !password) {
