@@ -1,4 +1,3 @@
-// File: app/register/page.tsx
 "use client";
 
 import { useState } from "react";
@@ -30,7 +29,6 @@ export default function RegisterPage() {
         throw new Error(data.message || "Gagal mendaftar");
       }
 
-      // Lempar ke login dengan notifikasi sukses
       router.push("/login?registered=true");
       
     } catch (err: any) {
