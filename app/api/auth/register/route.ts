@@ -9,25 +9,22 @@ export async function POST(req: Request) {
     const { name, email, password } = await req.json();
 
     if (!name || !email || !password) {
-      return NextResponse.json(
-        { message: "Nama, Email, dan Password wajib diisi." },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: "Data tidak lengkap" }, { status: 400 });
     }
 
+    // Cek duplikat
     const existingUser = await prisma.user.findUnique({
       where: { email },
     });
 
     if (existingUser) {
-      return NextResponse.json(
-        { message: "Email ini sudah terdaftar. Silakan login saja." },
-        { status: 400 }
-      );
+      return NextResponse.json({ message: "Email sudah terdaftar" }, { status: 400 });
     }
 
+    // Hash password
     const hashedPassword = await hash(password, 10);
 
+    // Create user
     const user = await prisma.user.create({
       data: {
         name,
@@ -38,16 +35,9 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json(
-      { message: "Registrasi berhasil!", user },
-      { status: 201 }
-    );
-
+    return NextResponse.json({ message: "Sukses", user }, { status: 201 });
   } catch (error) {
-    console.error("Register Error:", error);
-    return NextResponse.json(
-      { message: "Terjadi kesalahan server." },
-      { status: 500 }
-    );
+    console.error("REGISTER ERROR:", error); // Cek logs nanti kalau error lagi
+    return NextResponse.json({ message: "Server Error" }, { status: 500 });
   }
 }
