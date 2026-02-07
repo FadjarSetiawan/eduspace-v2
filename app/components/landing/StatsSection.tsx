@@ -2,7 +2,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { useInView } from "framer-motion"; // Opsional, kita pakai logic manual aja biar ringan
 
 // Component Angka Animasi
 function Counter({ end, suffix = "" }: { end: number; suffix?: string }) {
