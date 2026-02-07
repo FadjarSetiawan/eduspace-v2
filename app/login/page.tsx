@@ -1,13 +1,14 @@
 // File: app/login/page.tsx
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react"; // Tambah import Suspense
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { ArrowRight, Loader2, AlertCircle, CheckCircle } from "lucide-react";
 
-export default function LoginPage() {
+// 1. KITA UBAH NAMA KOMPONEN UTAMA JADI "LoginForm" (Bukan export default)
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const registered = searchParams.get("registered");
@@ -23,7 +24,7 @@ export default function LoginPage() {
 
     try {
       const res = await signIn("credentials", {
-        redirect: false, // Kita handle redirect manual biar smooth
+        redirect: false,
         email: form.email,
         password: form.password,
       });
@@ -33,7 +34,7 @@ export default function LoginPage() {
         setLoading(false);
       } else {
         router.push("/dashboard");
-        router.refresh(); // Refresh biar session server terupdate
+        router.refresh();
       }
     } catch (err) {
       setError("Terjadi kesalahan sistem.");
@@ -113,5 +114,14 @@ export default function LoginPage() {
         </p>
       </div>
     </div>
+  );
+}
+
+// 2. EXPORT DEFAULT YANG BARU: BUNGKUS DENGAN SUSPENSE
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#111]"></div>}>
+      <LoginForm />
+    </Suspense>
   );
 }
