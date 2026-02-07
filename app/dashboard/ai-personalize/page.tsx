@@ -28,7 +28,7 @@ export default function AiPersonalizePage() {
   
   // Data Graph
   const [graphData, setGraphData] = useState({ nodes: [], links: [] });
-  const fgRef = useRef<any>();
+  const fgRef = useRef<any>(null);
 
   // Data Detail (Panel Kanan)
   const [selectedLink, setSelectedLink] = useState<any>(null);
