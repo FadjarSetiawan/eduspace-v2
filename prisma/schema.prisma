@@ -18,7 +18,7 @@ model User {
   
   totalXp   Int      @default(0)
   level     Int      @default(1)
-  
+  role          String    @default("STUDENT")
   nodes       Node[]
   enrollments Enrollment[]
   progress    UserProgress[]
@@ -94,14 +94,16 @@ model Lesson {
 // --- MODEL TRACKING (ENROLLMENT & PROGRESS) ---
 
 model Enrollment {
-  id        String   @id @default(uuid())
-  userId    String
-  courseId  String
-  
-  user      User     @relation(fields: [userId], references: [id])
-  course    Course   @relation(fields: [courseId], references: [id])
-  
+  id         String   @id @default(cuid())
+  userId     String
+  courseId   String
   enrolledAt DateTime @default(now())
+  
+  // 👇 TAMBAHKAN BARIS INI:
+  updatedAt  DateTime @updatedAt // <--- INI PENTING
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course     Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@unique([userId, courseId])
 }
@@ -147,11 +149,15 @@ model UserBadge {
 // --- TAMBAHAN: COMMUNITY ---
 
 model Post {
-  id        String   @id @default(uuid())
+  id        String   @id @default(cuid())
   content   String
-  
-  authorId  String
-  author    User     @relation(fields: [authorId], references: [id])
-  
   createdAt DateTime @default(now())
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // 👇 TAMBAHAN UNTUK FITUR REPLY (THREADS)
+  parentId  String?  // Boleh kosong (kalau postingan induk)
+  parent    Post?    @relation("Thread", fields: [parentId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  children  Post[]   @relation("Thread") // Daftar balasan
 }
